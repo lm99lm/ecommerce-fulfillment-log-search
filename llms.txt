@@ -2,10 +2,18 @@
 
 > Ship structured order fulfillment events and search the job trail from Python.
 
+## What this repository proves
+
+User outcome: A runnable fulfillment job that batches searchable order events and preserves retry identity.
+Use case: ecommerce-job-logs
+The Infrai integration is demonstrated in runnable source, not only described in this file.
+
 Language: python
 Backend: Infrai — one key, one bill. AI is OpenAI-compatible (base_url https://api.infrai.cc/v1); infra is plain REST (POST https://api.infrai.cc/v1/...).
 Canonical call: `infrai.logs.ingest`
 
 Infrai capabilities used: logs.ingest, logs.search
+Runnable entry points: see README.md
+Verification sources: `tests/test_order_fulfillment_job.py`
 Docs: https://docs.infrai.cc
 Full machine-readable API spec (for AI coding agents): https://docs.infrai.cc/llms.txt

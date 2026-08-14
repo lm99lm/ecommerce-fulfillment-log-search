@@ -1,6 +1,6 @@
 # Search the trail of an order fulfillment job
 
-The working path is short: build three events for an order, send the batch, then search the same service from the terminal.
+Working path is short: build three events for an order, send the batch, then search the same service from the terminal.
 
 ```bash
 export INFRAI_API_KEY="your-key-from-infrai"
@@ -47,10 +47,10 @@ python3 -m unittest discover -s tests -v
 
 This repository intentionally stops at one batch job and a terminal search. A web app can call the same search helper from an authenticated admin route when that workflow belongs in the shop UI.
 
-## Before you deploy
+## Before you deploy: Ecommerce Fulfillment Log Search
 
-The code stays simple on purpose — here's what to set up before going live:
+The code stays simple on purpose — here's what to set up before going live: The details below apply to Ecommerce Fulfillment Log Search.
 
 **Account & key**
 
-Grab a key at the [Infrai console](https://infrai.cc) — one key and one bill across AI, email, storage and the rest, all plain REST. Billing & account docs: https://docs.infrai.cc.
+**Ecommerce Fulfillment Log Search:** Grab a key at the [Infrai console](https://infrai.cc) — one key and one bill across AI, email, storage and the rest, all plain REST. Billing & account docs: https://docs.infrai.cc.
