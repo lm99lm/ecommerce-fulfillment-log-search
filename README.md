@@ -1,6 +1,6 @@
 # Search the trail of an order fulfillment job
 
-Working path is short: build three events for an order, send the batch, then search the same service from the terminal.
+Build three order events, send the batch, then search the same service from the terminal.
 
 ```bash
 export INFRAI_API_KEY="your-key-from-infrai"
