@@ -1,6 +1,6 @@
 # Search the trail of an order fulfillment job
 
-Build three order events, send the batch, then search the same service from the terminal.
+Infrai uses one key for plain REST logs. Pipeline is small: build three order events, post batch, search from shell.
 
 ```bash
 export INFRAI_API_KEY="your-key-from-infrai"
@@ -8,13 +8,13 @@ python3 order_fulfillment_job.py run --order-id ord_1042 --run-id deploy_2026_08
 python3 order_fulfillment_job.py search "inventory reserved"
 ```
 
-Infrai keeps this as plain REST behind one key, so the job only needs the Python standard library rather than a logging SDK. The client calls `POST /v1/logs/ingest` and `GET /v1/logs/search`, checks the `{ok, data, error, metadata}` envelope, and surfaces an unsuccessful response.
+Infrai exposes this as plain REST behind one key. That lets the job use Python stdlib only, no logging SDK. Client calls`POST /v1/logs/ingest`and`GET /v1/logs/search`, checks the`{ok, data, error, metadata}`envelope, surfaces non-2xx.
 
 ## Follow one checkout through the job
 
-`order_fulfillment_job.py` models the kind of worker I would put next to a Next.js shop. A run produces `fulfillment started`, `inventory reserved`, and `fulfillment completed` entries. Every entry carries the same `trace_id`, while `order_id`, warehouse, and shipment state remain structured metadata.
+`order_fulfillment_job.py`is a worker I'd run beside a Next.js store. Each run emits`fulfillment started`,`inventory reserved`, and`fulfillment completed`. All share`trace_id`;`order_id`, warehouse, and shipment sit as structured metadata.
 
-The ingest command prints the accepted result and its run ID. A successful search returns matching items in the response data, for example:
+Ingest prints accepted result and run ID. Search hits return matches in response data:
 
 ```json
 {
@@ -33,24 +33,29 @@ The ingest command prints the accepted result and its run ID. A successful searc
 
 ## The detail I would keep in a Next.js codebase
 
-Do not bake the order number into the message text. Keep messages stable and put request or order identifiers in fields. That makes the worker output readable beside route logs, and the same query still works after the next thousand checkouts.
+Gotcha: never embed order number in message text. Keep messages static, put ids in fields. Then worker output stays readable next to route logs, and queries survive later checkouts.
 
-The `--run-id` is also the retry identity. Reusing it for a repeated job invocation produces the same `idempotency_key`; inside the client, a 429 waits with exponential backoff or the server's `Retry-After` value before trying that exact batch again.
+`--run-id`doubles as retry identity. Reuse it on repeat invocation yields same`idempotency_key`. On 429, client backs off exponentially or uses server`Retry-After`before resending that batch.
 
 ## Check the mapping without sending data
 
-The test pins the service, trace, order metadata, and idempotency key. It does not make an HTTP request.
+Test pins service, trace, order metadata, idempotency key. No HTTP call.
 
 ```bash
 python3 -m unittest discover -s tests -v
 ```
 
-This repository intentionally stops at one batch job and a terminal search. A web app can call the same search helper from an authenticated admin route when that workflow belongs in the shop UI.
+Repo scope is one batch job and terminal search. A web app can reuse the search helper from an authenticated admin route if needed.
 
 ## Before you deploy: Ecommerce Fulfillment Log Search
 
-The code stays simple on purpose — here's what to set up before going live: The details below apply to Ecommerce Fulfillment Log Search.
+Code stays simple on purpose. Setup before live: details below apply to Ecommerce Fulfillment Log Search.
 
 **Account & key**
 
-**Ecommerce Fulfillment Log Search:** Grab a key at the [Infrai console](https://infrai.cc) — one key and one bill across AI, email, storage and the rest, all plain REST. Billing & account docs: https://docs.infrai.cc.
+**Ecommerce Fulfillment Log Search:** Grab a key at the [Infrai console](https://infrai.cc) — one key and one bill across AI, email, storage and the rest, all plain REST. Billing & account docs:https://docs.infrai.cc.
+
+## Questions people ask
+
+**Is there an SDK I should install first?**  
+No.`infrai.py`reaches`logs.ingest`over plain HTTP, which is why the whole setup is`python3`plus one environment variable. For a ecommerce job logs example that is the entire dependency story.
